@@ -260,7 +260,7 @@ function evolve:RegisterPlugin( plugin )
 				setmetatable( plugin, { __index = existing } )
 				existing.Overridden = true
 				break
-			elseif ( existing.Override == plugin.Title )
+			elseif ( existing.Override == plugin.Title ) then
 				setmetatable( existing, { __index = plugin } )
 				plugin.Overridden = true
 				break
