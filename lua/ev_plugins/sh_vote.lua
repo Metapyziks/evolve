@@ -18,10 +18,12 @@ function PLUGIN:GetArguments( str )
 	return args
 end
 
-function PLUGIN:Initialize()
-	util.AddNetworkString("EV_VoteEnd")
-	util.AddNetworkString("EV_VoteMenu")
-	util.AddNetworkString("EV_DoVote")
+if SERVER then
+	function PLUGIN:Initialize()
+		util.AddNetworkString("EV_VoteEnd")
+		util.AddNetworkString("EV_VoteMenu")
+		util.AddNetworkString("EV_DoVote")
+	end
 end
 
 function PLUGIN:VoteEnd()

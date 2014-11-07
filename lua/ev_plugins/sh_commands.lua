@@ -8,8 +8,10 @@ PLUGIN.Description = "Display all available chat commands."
 PLUGIN.Author = "Overv"
 PLUGIN.ChatCommand = "commands"
 
-function PLUGIN:Initialize()
-	util.AddNetworkString( "EV_Command" )
+if SERVER then
+	function PLUGIN:Initialize()
+		util.AddNetworkString( "EV_Command" )
+	end
 end
 
 function PLUGIN:Call( ply, args )

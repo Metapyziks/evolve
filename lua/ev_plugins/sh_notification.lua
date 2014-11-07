@@ -10,8 +10,10 @@ PLUGIN.ChatCommand = "notice"
 PLUGIN.Usage = "<message> [time=10]"
 PLUGIN.Privileges = { "Notice" }
 
-function PLUGIN:Initialize()
-	util.AddNetworkString( "EV_Notify" )
+if SERVER then
+	function PLUGIN:Initialize()
+		util.AddNetworkString( "EV_Notify" )
+	end
 end
 
 function PLUGIN:Call( ply, args )
