@@ -265,19 +265,12 @@ function evolve:FindPlugin( name )
 	end
 end
 
-local calledHooks = {}
-
 if ( !evolve.HookCall ) then evolve.HookCall = hook.Call end
 hook.Call = function( name, gm, ... )
 	local arg = { ... }
-
-	if calledHooks[name] == nil then
-		calledHooks[name] = true
-		print("Hook " .. name .. " called")
-	end
 	
 	for _, plugin in ipairs( evolve.plugins ) do
-		if ( plugin[ name ] ) then
+		if ( plugin[ name ] ) then			
 			local retValues = { pcall( plugin[name], plugin, ... ) }
 			
 			if ( retValues[1] and retValues[2] != nil ) then
