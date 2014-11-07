@@ -218,10 +218,11 @@ function evolve:LoadPlugins()
 	evolve:ResolveDependencies()
 end
 
-function evolve:ResolvePluginDependencies(plugin)
+function evolve:ResolvePluginDependencies( plugin )
+	if plugin.Overridden then return false, nil end
 	if plugin.Dependencies ~= nil and #plugin.Dependencies > 0 then
-		for _,dependency in pairs(plugin.Dependencies) do
-			if evolve:FindStagedPlugin(dependency) == nil and evolve:FindPlugin(dependency) == nil then
+		for _,dependency in pairs( plugin.Dependencies ) do
+			if evolve:FindStagedPlugin( dependency ) == nil and evolve:FindPlugin( dependency ) == nil then
 				return false, dependency
 			end
 		end
@@ -232,22 +233,41 @@ end
 function evolve:ResolveDependencies()
 	while #evolve.stagedPlugins > 0 do
 		local plugin = evolve.stagedPlugins[1]
-		local success, dep = evolve:ResolvePluginDependencies(plugin)
+		local success, dep = evolve:ResolvePluginDependencies( plugin )
 		if success then
-			table.insert(evolve.plugins, plugin)
-		else
+			table.insert( evolve.plugins, plugin )
+			if ( plugin.Privileges and SERVER ) then
+				for _, privilege in ipairs(plugin.Privileges) do
+					if ( not table.HasValue(evolve.privileges) ) then
+						table.insert(evolve.privileges, privilege)
+					end
+				end
+			end
+		elseif dep ~= nil then
 			evolve:Notify( evolve.colors.red, "Plugin dependency not met: Plugin " .. plugin.Title .. " requires " .. dep .. " to run!" )
 		end
-		table.remove(evolve.stagedPlugins,1)
+		table.remove( evolve.stagedPlugins, 1 )
 	end
+
+	table.sort( evolve.privileges )
 end
 
 function evolve:RegisterPlugin( plugin )
 	local pluginFile = evolve.pluginFile
 	if ( string.Left( pluginFile, string.find( pluginFile, "_" ) - 1 ) != "cl" or CLIENT ) then
-		table.insert( evolve.stagedPlugins, plugin )
+		for _, existing in ipairs( evolve.stagedPlugins ) do
+			if ( existing.Title == plugin.Override ) then
+				setmetatable( plugin, { __index = existing } )
+				existing.Overridden = true
+				break
+			elseif ( existing.Override == plugin.Title )
+				setmetatable( existing, { __index = plugin } )
+				plugin.Overridden = true
+				break
+			end
+		end
 		plugin.File = pluginFile
-		if ( plugin.Privileges and SERVER ) then table.Add( evolve.privileges, plugin.Privileges ) table.sort( evolve.privileges ) end
+		table.insert( evolve.stagedPlugins, plugin )
 	else
 		table.insert( evolve.plugins, { Title = plugin.Title, File = pluginFile } )
 	end
