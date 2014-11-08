@@ -233,6 +233,7 @@ end
 function evolve:ResolveDependencies()
 	while #evolve.stagedPlugins > 0 do
 		local plugin = evolve.stagedPlugins[1]
+		print( "Resolving " .. plugin.Title )
 		local success, dep = evolve:ResolvePluginDependencies( plugin )
 		if success then
 			table.insert( evolve.plugins, plugin )
@@ -253,14 +254,17 @@ function evolve:ResolveDependencies()
 end
 
 function evolve:RegisterPlugin( plugin )
+	print( "Registering " .. plugin.Title )
 	local pluginFile = evolve.pluginFile
 	if ( string.Left( pluginFile, string.find( pluginFile, "_" ) - 1 ) != "cl" or CLIENT ) then
 		for _, existing in ipairs( evolve.stagedPlugins ) do
 			if ( existing.Title == plugin.Override ) then
+				print( plugin.Title .. " overrides " .. existing.Title )
 				setmetatable( plugin, { __index = existing } )
 				existing.Overridden = true
 				break
 			elseif ( existing.Override == plugin.Title ) then
+				print( existing.Title .. " overrides " .. plugin.Title )
 				setmetatable( existing, { __index = plugin } )
 				plugin.Overridden = true
 				break
