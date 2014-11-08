@@ -236,6 +236,7 @@ function evolve:ResolveDependencies()
 		print( "Resolving " .. plugin.Title )
 		local success, dep = evolve:ResolvePluginDependencies( plugin )
 		if success then
+			print( "Adding " .. plugin.Title )
 			table.insert( evolve.plugins, plugin )
 			if ( plugin.Privileges and SERVER ) then
 				for _, privilege in ipairs(plugin.Privileges) do
