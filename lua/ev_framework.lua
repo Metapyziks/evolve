@@ -254,20 +254,24 @@ function evolve:ResolveDependencies()
 	table.sort( evolve.privileges )
 end
 
+function evolve:Override( base, overrider )
+	overrider.Overridden = overrider.Overridden or false
+	base.Overridden = true
+
+	print( overrider.Title .. " overrides " .. base.Title )
+	setmetatable( overrider, { __index = base } )
+end
+
 function evolve:RegisterPlugin( plugin )
 	print( "Registering " .. plugin.Title )
 	local pluginFile = evolve.pluginFile
 	if ( string.Left( pluginFile, string.find( pluginFile, "_" ) - 1 ) != "cl" or CLIENT ) then
 		for _, existing in ipairs( evolve.stagedPlugins ) do
 			if ( existing.Title == plugin.Override ) then
-				print( plugin.Title .. " overrides " .. existing.Title )
-				setmetatable( plugin, { __index = existing } )
-				existing.Overridden = true
+				evolve:Override( existing, plugin )
 				break
 			elseif ( existing.Override == plugin.Title ) then
-				print( existing.Title .. " overrides " .. plugin.Title )
-				setmetatable( existing, { __index = plugin } )
-				plugin.Overridden = true
+				evolve:Override( plugin, existing )
 				break
 			end
 		end
