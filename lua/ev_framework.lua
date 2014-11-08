@@ -255,11 +255,8 @@ function evolve:ResolveDependencies()
 end
 
 function evolve:Override( base, overrider )
-	overrider.Overridden = overrider.Overridden or false
-	base.Overridden = true
-
 	print( overrider.Title .. " overrides " .. base.Title )
-	setmetatable( overrider, { __index = base } )
+	base.Overridden = true
 end
 
 function evolve:RegisterPlugin( plugin )
