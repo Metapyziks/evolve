@@ -233,10 +233,8 @@ end
 function evolve:ResolveDependencies()
 	while #evolve.stagedPlugins > 0 do
 		local plugin = evolve.stagedPlugins[1]
-		print( "Resolving " .. plugin.Title )
 		local success, dep = evolve:ResolvePluginDependencies( plugin )
 		if success then
-			print( "Adding " .. plugin.Title )
 			table.insert( evolve.plugins, plugin )
 			if ( plugin.Privileges and SERVER ) then
 				for _, privilege in ipairs(plugin.Privileges) do
@@ -255,12 +253,10 @@ function evolve:ResolveDependencies()
 end
 
 function evolve:Override( base, overrider )
-	print( overrider.Title .. " overrides " .. base.Title )
 	base.Overridden = true
 end
 
 function evolve:RegisterPlugin( plugin )
-	print( "Registering " .. plugin.Title )
 	local pluginFile = evolve.pluginFile
 	if ( string.Left( pluginFile, string.find( pluginFile, "_" ) - 1 ) != "cl" or CLIENT ) then
 		for _, existing in ipairs( evolve.stagedPlugins ) do
